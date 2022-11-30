@@ -15,7 +15,7 @@ namespace Avalonia.Data.Core
     /// that are sent and received.
     /// </summary>
     [RequiresUnreferencedCode(TrimmingMessages.TypeConvertionRequiresUnreferencedCodeMessage)]
-    public class BindingExpression : LightweightObservableBase<object?>, ISubject<object?>, IDescription
+    internal class BindingExpression : LightweightObservableBase<object?>, ISubject<object?>, IDescription
     {
         private readonly ExpressionObserver _inner;
         private readonly Type _targetType;
