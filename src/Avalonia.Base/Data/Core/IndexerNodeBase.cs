@@ -9,7 +9,7 @@ using Avalonia.Utilities;
 
 namespace Avalonia.Data.Core
 {
-    public abstract class IndexerNodeBase : SettableNode
+    internal abstract class IndexerNodeBase : SettableNode
     {
         private IDisposable? _subscription;
         
