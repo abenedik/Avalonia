@@ -71,6 +71,15 @@ namespace Avalonia
         public static readonly StyledProperty<ControlTheme?> ThemeProperty =
             AvaloniaProperty.Register<StyledElement, ControlTheme?>(nameof(Theme));
 
+        /// <summary>
+        /// Defines the <see cref="ThemeVariant"/> property.
+        /// </summary>
+        public static readonly StyledProperty<ThemeVariant> ThemeVariantProperty =
+            AvaloniaProperty.Register<StyledElement, ThemeVariant>(
+                nameof(ThemeVariant),
+                inherits: true,
+                defaultValue: ThemeVariant.Light);
+        
         private static readonly ControlTheme s_invalidTheme = new ControlTheme();
         private int _initCount;
         private string? _name;
@@ -439,11 +448,11 @@ namespace Avalonia
         void IResourceHost.NotifyHostedResourcesChanged(ResourcesChangedEventArgs e) => NotifyResourcesChanged(e);
 
         /// <inheritdoc/>
-        bool IResourceNode.TryGetResource(object key, out object? value)
+        public bool TryGetResource(object key, ThemeVariant? theme, out object? value)
         {
             value = null;
-            return (_resources?.TryGetResource(key, out value) ?? false) ||
-                   (_styles?.TryGetResource(key, out value) ?? false);
+            return (_resources?.TryGetResource(key, theme, out value) ?? false) ||
+                   (_styles?.TryGetResource(key, theme, out value) ?? false);
         }
 
         /// <summary>
@@ -658,7 +667,7 @@ namespace Avalonia
         {
             var theme = Theme;
 
-            // Explitly set Theme property takes precedence.
+            // Explicitly set Theme property takes precedence.
             if (theme is not null)
                 return theme;
 
@@ -679,6 +688,11 @@ namespace Avalonia
             return null;
         }
 
+        internal ThemeVariant GetEffectiveThemeVariant()
+        {
+            return GetValue(ThemeVariantProperty);
+        }
+        
         internal virtual void InvalidateStyles(bool recurse)
         {
             var values = GetValueStore();

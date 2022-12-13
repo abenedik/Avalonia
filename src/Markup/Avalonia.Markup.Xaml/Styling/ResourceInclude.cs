@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls;
+using Avalonia.Styling;
 
 #nullable enable
 
@@ -73,12 +74,12 @@ namespace Avalonia.Markup.Xaml.Styling
             add => Loaded.OwnerChanged += value;
             remove => Loaded.OwnerChanged -= value;
         }
-
-        bool IResourceNode.TryGetResource(object key, out object? value)
+        
+        public bool TryGetResource(object key, ThemeVariant? theme, out object? value)
         {
             if (!_isLoading)
             {
-                return Loaded.TryGetResource(key, out value);
+                return Loaded.TryGetResource(key, theme, out value);
             }
 
             value = null;
