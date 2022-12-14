@@ -116,9 +116,9 @@ namespace Avalonia.Controls
 
             if (result != null)
             {
-                if(result.Subject != null)
+                if(result.Source is ISubject<object> subject)
                 {
-                    var bindingHelper = new CellEditBinding(result.Subject);
+                    var bindingHelper = new CellEditBinding(subject);
                     var instanceBinding = new InstancedBinding(bindingHelper.InternalSubject, result.Mode, result.Priority); 
 
                     BindingOperations.Apply(target, property, instanceBinding, null);

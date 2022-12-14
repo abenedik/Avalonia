@@ -1,5 +1,6 @@
 using System;
 using System.Reactive.Subjects;
+using ObservableEx = Avalonia.Reactive.ObservableEx;
 
 namespace Avalonia.Data
 {
@@ -17,7 +18,7 @@ namespace Avalonia.Data
         /// <summary>
         /// Initializes a new instance of the <see cref="InstancedBinding"/> class.
         /// </summary>
-        /// <param name="subject">The binding source.</param>
+        /// <param name="source">The binding source.</param>
         /// <param name="mode">The binding mode.</param>
         /// <param name="priority">The priority of the binding.</param>
         /// <remarks>
@@ -26,20 +27,11 @@ namespace Avalonia.Data
         /// source which can be used for all binding modes. If you wish to create an instance with
         /// something other than a subject, use one of the static creation methods on this class.
         /// </remarks>
-        public InstancedBinding(ISubject<object?> subject, BindingMode mode, BindingPriority priority)
-        {
-            Contract.Requires<ArgumentNullException>(subject != null);
-
-            Mode = mode;
-            Priority = priority;
-            Value = subject;
-        }
-
-        private InstancedBinding(object? value, BindingMode mode, BindingPriority priority)
+        public InstancedBinding(IObservable<object?> source, BindingMode mode, BindingPriority priority)
         {
             Mode = mode;
             Priority = priority;
-            Value = value;
+            Source = source ?? throw new ArgumentNullException(nameof(source));
         }
 
         /// <summary>
@@ -53,19 +45,12 @@ namespace Avalonia.Data
         public BindingPriority Priority { get; }
 
         /// <summary>
-        /// Gets the value or source of the binding.
+        /// Gets the binding source observable.
         /// </summary>
-        public object? Value { get; }
+        public IObservable<object?> Source { get; }
 
-        /// <summary>
-        /// Gets the <see cref="Value"/> as an observable.
-        /// </summary>
-        public IObservable<object?>? Observable => Value as IObservable<object?>;
-
-        /// <summary>
-        /// Gets the <see cref="Value"/> as a subject.
-        /// </summary>
-        public ISubject<object?>? Subject => Value as ISubject<object?>;
+        [Obsolete("Use Source property")]
+        public IObservable<object?> Observable => Source;
 
         /// <summary>
         /// Creates a new one-time binding with a fixed value.
@@ -77,7 +62,7 @@ namespace Avalonia.Data
             object value,
             BindingPriority priority = BindingPriority.LocalValue)
         {
-            return new InstancedBinding(value, BindingMode.OneTime, priority);
+            return new InstancedBinding(ObservableEx.SingleValue(value), BindingMode.OneTime, priority);
         }
 
         /// <summary>
@@ -147,7 +132,7 @@ namespace Avalonia.Data
         /// <returns>An <see cref="InstancedBinding"/> instance.</returns>
         public InstancedBinding WithPriority(BindingPriority priority)
         {
-            return new InstancedBinding(Value, Mode, priority);
+            return new InstancedBinding(Source, Mode, priority);
         }
     }
 }
