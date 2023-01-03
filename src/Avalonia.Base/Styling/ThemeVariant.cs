@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Text;
+using Avalonia.Platform;
 
 namespace Avalonia.Styling;
 
@@ -31,5 +32,15 @@ public sealed record ThemeVariant(object Key)
     public bool Equals(ThemeVariant? other)
     {
         return Key == other?.Key;
+    }
+
+    public static ThemeVariant FromPlatformThemeVariant(PlatformThemeVariant themeVariant)
+    {
+        return themeVariant switch
+        {
+            PlatformThemeVariant.Light => Light,
+            PlatformThemeVariant.Dark => Dark,
+            _ => throw new ArgumentOutOfRangeException(nameof(themeVariant), themeVariant, null)
+        };
     }
 }

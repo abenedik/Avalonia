@@ -187,6 +187,8 @@ namespace Avalonia.Win32
 
             _nativeControlHost = new Win32NativeControlHost(this, _isUsingComposition);
             s_instances.Add(this);
+            
+            SetDwmDarkMode(_hwnd, Win32Platform.PlatformSettings.GetColorValues().ThemeVariant);
         }
 
         public Action Activated { get; set; }
@@ -503,6 +505,19 @@ namespace Avalonia.Win32
             }
         }
 
+        internal static unsafe void SetDwmDarkMode(IntPtr handle, PlatformThemeVariant themeVariant)
+        {
+            if (Win32Platform.WindowsVersion.Build >= 22000)
+            {
+                var pvUseBackdropBrush = themeVariant == PlatformThemeVariant.Dark ? 1 : 0;
+                DwmSetWindowAttribute(
+                    handle,
+                    (int)DwmWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE,
+                    &pvUseBackdropBrush,
+                    sizeof(int));
+            }
+        }
+        
         public IEnumerable<object> Surfaces => new object[] { (IPlatformNativeSurfaceHandle)Handle, _gl, _framebuffer };
 
         public PixelPoint Position

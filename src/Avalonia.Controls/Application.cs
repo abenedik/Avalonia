@@ -71,6 +71,15 @@ namespace Avalonia
         public Application()
         {
             Name = "Avalonia Application";
+
+            var settings = AvaloniaLocator.Current.GetRequiredService<IPlatformSettings>();
+            settings.ColorValuesChanged += OnColorValuesChanged;
+            ThemeVariant = ThemeVariant.FromPlatformThemeVariant(settings.GetColorValues().ThemeVariant);
+        }
+
+        private void OnColorValuesChanged(object? sender, PlatformColorValues e)
+        {
+            ThemeVariant = ThemeVariant.FromPlatformThemeVariant(e.ThemeVariant);
         }
 
         /// <summary>

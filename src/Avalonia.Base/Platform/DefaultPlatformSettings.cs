@@ -1,5 +1,6 @@
 ﻿using System;
 using Avalonia.Input;
+using Avalonia.Media;
 
 namespace Avalonia.Platform
 {
@@ -9,7 +10,7 @@ namespace Avalonia.Platform
     /// </summary>
     public class DefaultPlatformSettings : IPlatformSettings
     {
-        public Size GetTapSize(PointerType type)
+        public virtual Size GetTapSize(PointerType type)
         {
             return type switch
             {
@@ -17,7 +18,7 @@ namespace Avalonia.Platform
                 _ => new(4, 4),
             };
         }
-        public Size GetDoubleTapSize(PointerType type)
+        public virtual Size GetDoubleTapSize(PointerType type)
         {
             return type switch
             {
@@ -25,8 +26,20 @@ namespace Avalonia.Platform
                 _ => new(4, 4),
             };
         }
-        public TimeSpan GetDoubleTapTime(PointerType type) => TimeSpan.FromMilliseconds(500);
+        public virtual TimeSpan GetDoubleTapTime(PointerType type) => TimeSpan.FromMilliseconds(500);
 
-        public TimeSpan HoldWaitDuration { get; set; } = TimeSpan.FromMilliseconds(300);
+        public virtual TimeSpan HoldWaitDuration => TimeSpan.FromMilliseconds(300);
+        
+        public virtual PlatformColorValues GetColorValues()
+        {
+            return new PlatformColorValues(PlatformThemeVariant.Light);
+        }
+
+        public event EventHandler<PlatformColorValues>? ColorValuesChanged;
+
+        protected void OnColorValuesChanged(PlatformColorValues colorValues)
+        {
+            ColorValuesChanged?.Invoke(this, colorValues);
+        }
     }
 }
